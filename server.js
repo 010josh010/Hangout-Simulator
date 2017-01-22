@@ -5,13 +5,15 @@ const bodyParser = require('body-parser');
 const path = require('path'); 
 const mongoose = require('mongoose');  
 const methodOverride = require('method-override');
-const exphbs = require('express-handlebars');
 const helmet = require('helmet'); 
+const expressJWT = require('express-jwt'); 
+const Shared = require('./services/Shared'); 
 
 
 //express init and port 
 const app = express(); 
-const PORT = process.env.PORT; 
+//process.env.PORT
+const PORT = 3001; 
 
 
 /*middleware---------------------*/  
@@ -24,16 +26,9 @@ app.use(bodyParser.json({type:'application/vnd.api+json'}));
 //method override 
 app.use(methodOverride('_method'));
 
-//for handlebars 
-app.engine('handlebars', exphbs({
-	defaultLayout: 'main'
-}));
-app.set('view engine', 'handlebars');
 
 //for express security 
 app.use(helmet()); 
-
-/*end middleare--------------------*/ 
 
 //for serving static content 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -42,6 +37,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const mainController = require('./controllers/mainController.js'); 
 app.use('/' , mainController); 
 
+//for express jwt 
+app.use(expressJWT({secret: Shared.secret}).unless({path: ['/', '/account/auth']}))
+
+/*end middleare--------------------*/ 
+
 
 //listening for connections 
-app.listen( PORT || 5000, _=> console.log('listening on port' , PORT)); 
+app.listen( PORT, _=> console.log('listening on port' , PORT)); 
