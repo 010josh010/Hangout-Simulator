@@ -6,14 +6,12 @@ const path = require('path');
 const mongoose = require('mongoose');  
 const methodOverride = require('method-override');
 const helmet = require('helmet'); 
-const expressJWT = require('express-jwt'); 
-const Shared = require('./services/Shared'); 
-
 
 //express init and port 
 const app = express(); 
 //process.env.PORT
-const PORT = 3001; 
+const PORT = 3001;
+
 
 
 /*middleware---------------------*/  
@@ -33,12 +31,22 @@ app.use(helmet());
 //for serving static content 
 app.use(express.static(path.join(__dirname, 'public')));
 
-//export routes from router 
-const mainController = require('./controllers/mainController.js'); 
-app.use('/' , mainController); 
+//export route controllers from router 
+const mainController = require('./controllers/mainController'); 
+app.use('/api' , mainController); 
 
-//for express jwt 
-app.use(expressJWT({secret: Shared.secret}).unless({path: ['/', '/account/auth']}))
+
+//for express unauthorized user redirect to the login page
+ app.use(function(err, req, res, next) {
+    if(401 == err.status) {
+        res.redirect('/');
+    }
+  });
+
+//for react router browser history to return path to the app 
+ app.get('*', function (req, res){
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+})
 
 /*end middleare--------------------*/ 
 

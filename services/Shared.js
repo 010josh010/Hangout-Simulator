@@ -1,5 +1,5 @@
 const Shared = {
-	secret:'mungabunga 4 win'
+	secret:'mungaBunga 4 the winz!!'
 }
 
 module.exports = Shared; 

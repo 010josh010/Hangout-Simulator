@@ -12,12 +12,12 @@ const LoungeSchema = new Schema({
       required:true
    }, 
 
-   userRef:{
-      type:Schema.Types.ObjectId,
-      trim:true, 
-      required:true, 
-      ref: 'User' 
-   },
+
+   members: [{
+    type: Schema.Types.ObjectId,
+    // The ObjectIds will refer to the ids in the User model
+    ref: 'User'
+  }], 
 
    loungeCreated:{
       type: Date, 
@@ -25,6 +25,11 @@ const LoungeSchema = new Schema({
    }
 
 });
+
+//methods 
+LoungeSchema.methods.addMember = function(userId){
+   this.members.push(userId); 
+}
 
 // Create the "Lounge" model with our LoungeSchema 
 const Lounge= mongoose.model('Lounge', LoungeSchema);

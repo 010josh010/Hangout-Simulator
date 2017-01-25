@@ -4,10 +4,12 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const path = require('path'); 
+const expressJWT = require('express-jwt'); 
 const jwt = require('jsonwebtoken'); 
 
 //required service modules
-const Shared = require('../services/Shared');  
+const Shared = require('../services/Shared');
+const Salt = require('../services/Salt');  
 
 //models 
 const User = require('../models/User');
@@ -33,91 +35,200 @@ db.once('open',_=> {
 /*end configuration------------------------------------*/ 
 
 /*routes-*/ 
-//main route to render the index handlebars template
-router.get('/' , (req, res)=>{
-	res.status(200).sendFile(path.join(__dirname + 'index.html')); 
+//for user of json web tokens on routes
+router.use(expressJWT({secret: Shared.secret}).unless({path: ['/api/account/auth', '/api/account/signup']}))
+
+//for verifying token 
+router.get('/verify',(req, res)=>{
+	//for verification 
+	const userId = req.user.userId;  
+
+	User.findOne({_id: userId})
+			.exec((err, user)=>{
+				if(err){
+					res.status(500).send(err); 
+				} else if(!user){
+					res.status(404).send('page not found'); 
+				} else {
+					res.status(200).json('verified'); 
+				}
+			}); 
+
+
 }); 
 
-router.post('/account/signup' , (req, res)=>{
-	const newUser = new User(req.body); 
+//returns all of the active lounges *must use app or route will be unprotected
+router.get('/lounges' , (req, res)=>{
 
+	//finds and displays all lounges as json 
+	Lounge.find()
+			.populate('members','userName')
+				.exec((err, lounges)=>{
+					if(err){
+						res.status(500).send(err); 
+					} else {
+						res.status(200).json(lounges); 
+					}
+				})
+})
+
+
+//route for account signup 
+router.post('/account/signup' , (req, res)=>{
+
+	//creates the new user based on the schemea 
+	const newUser = new User(req.body); 
 	newUser.salt(newUser.password); 
 
 	newUser.save((err, saved)=>{
 		if(err){
 			res.status(500).send(err); 
 		} else {
-			console.log('test of hash: '+ saved.password); 
-			res.status(200).send(saved); 
+			res.status(200).redirect('/'); 
 		}
 	})
 })
 
+//route for authentication and passing of jwt 
 router.post('/account/auth' , (req, res)=>{
 
-	User.findOne({'username': req.body.username})
+	//for verification 
+	const username = req.body.userName; 
+	const pwd = Salt(req.body.password); 
+
+	User.findOne({userName: username})
 		.exec((err, user)=>{
 			if(err){
 				res.send(err); 
 			} else if(!user) {
-				res.status(401).send('username not found')
-			} else if(req.body.password !== user.password){
+				res.status(401).send('username or password is incorrect')
+			} else if(!pwd){
 				res.status(401).send('password required'); 
+			} else if(pwd !== user.password){
+				res.status(401).send('username or password is incorrect')
 			} else {
-				console.log('authentication successful'); 
 				//exchage for a web token here 
-				const token = jwt.sign({username:req.body.username} , Shared.secret)
-				res.status(200).json(token); 
+				const jwtToken = jwt.sign({userId:user._id} , Shared.secret)
+				res.status(200).json({token:jwtToken}); 
 			}
 		})
 
 })
 
-//route to return all users from the db
-router.get('/users/all' , (req, res)=>{
-	User.find()
-			.sort({'userName':1})
-				.populate('lounges')
-					.exec((err, users)=>{
-						if(err){
-							res.send(err); 
-						} else {
-							res.json(users); 
-						}
-					}); 
+//route to manage a users account and update information 
+router.put('/account/manage/',(req, res)=>{
+
+	//for verification 
+	const userId = req.user.userId;  
+
+	User.findOne({_id: userId})
+			.exec((err, user)=>{
+				if(err){
+					res.status(500).send(err); 
+				} else if(!user){
+					res.status(404).send('page not found'); 
+				} else {
+					res.status(200).json(user); 
+				}
+			}); 
+
+
+}); 
+
+//route to manage a users account and update information 
+router.get('/account/info/',(req, res)=>{
+	//for verification 
+	const userId = req.user.userId;  
+
+	User.findOne({_id: userId})
+			.exec((err, user)=>{
+				if(err){
+					res.status(500).send(err); 
+				} else if(!user){
+					res.status(404).send('page not found'); 
+				} else {
+					res.status(200).json(user); 
+				}
+			}); 
+
 }); 
 
 //route to add a new Lounge
-router.post('/lounge/add' , (req, res)=>{
+router.post('/lounge/add' , (req, res)=>{ 
+
+	//for verification 
+	const userId= req.user.userId; 
 
 	//creating a new lounge from out loungemodel with the req body 
 	const newLounge = new Lounge(req.body); 
+	//lookup the user making the request 
+	User.findOne({_id: userId})
+			.exec((err, user)=>{
+				if(err){
+					res.status(500).send(err)
+					//if they are already joined to a lounge, they 
+				} else if(!user){
+					res.status(404).send('page not found'); 
 
-	newLounge.save((err, saved)=>{
-		if(err){
-			//sends errors to the client
-			res.send(err); 
-		} else {
-			// Find our User and push the new lounge into the users lounges array
-		      User.findOneAndUpdate({'_id':saved.userRef}, { $push: { 'lounges': saved._id } }, { new: true })
-		      	.populate('lounges')
-			      	.exec((err, newdoc)=> {
-				        if (err) {
-				          res.send(err);
-				        }
-				        // Or send the newdoc to the client
-				        else {
-				          res.send(newdoc);
-				        }
-			      })
-		}
-	})
+				} else if(user.joinedTo){
+					res.status(400).send('cannot create lounge'); 
+				} else {
+					//save the lounge to the db 
+					newLounge.save((err, saved)=>{
+						if(err){
+							//sends errors to the client
+							res.status(500).send(err); 
+						} else {
+							res.status(200).redirect('/lounge/join/'+saved._id); 
+						}
+					})
+				}
+			})
 
-}); 
+});
+
+//route to join a lounge 
+router.get('/lounge/join/?:loungeId', (req, res)=>{
+	
+	//for verification 
+	const userId = req.user.userId; 
+	const loungeId= req.params.loungeId;   
+
+	//find the lounge based on the unique _id 
+	Lounge.findOneAndUpdate({_id: loungeId} , {$push:{members:userId}} , {new:true})
+			.exec((err, lounge)=>{
+				if(err){
+					res.status(500).send(err); 
+				} else if(!lounge){
+					res.status(404).send('page not found'); 
+				} else {
+					User.findOneAndUpdate({_id: userId} , {joinedTo:lounge._id}, {new:true})
+						.exec((err, newdoc)=>{
+							if(err){
+								res.status(500).send(err); 
+							}	else if(!newdoc){
+								Lounge.findOneAndUpdate({_id: lounge._id} , {$pull:{members:userId}} , {new:true}) 
+										.exec((err, updated)=>{
+											if(err){
+												res.status(500).send(err)
+											} else {
+												res.status(404).send('page not found'); 
+											}
+
+										})
+							} else {
+								res.status(200).json(newdoc); 
+							}
+						})
+				}
+			})
+
+}) 
+
 //route to remove a lounge
 router.delete('/lounge/remove' , (req, res)=>{
 	//assigns req body values for querying 
-	const userRef = req.body.userRef; 
+	const userId = req.user.userId; 
 	const loungeId = req.body._id;
 	//removes the lounge based on its unique id
 	Lounge.remove({'_id':loungeId})
@@ -126,7 +237,7 @@ router.delete('/lounge/remove' , (req, res)=>{
 				res.send(err)
 			} else {
 				//removes lounge id reference from the Users's lounges array
-				User.findOneAndUpdate({'_id':userRef}, { $pull: { 'lounges':loungeId } }, { new: true })
+				User.findOneAndUpdate({'_id':userRef}, {$pull: { 'lounges':loungeId }}, { new: true })
 		      		.populate('lounges')
 				      	.exec((err, newdoc)=> {
 					        if (err) {
@@ -142,5 +253,9 @@ router.delete('/lounge/remove' , (req, res)=>{
 
 
 });
+
+
+
+
 //exports the module as router
 module.exports = router ; 

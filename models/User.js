@@ -11,13 +11,14 @@ const UserSchema = new Schema({
       type:String, 
       trim:true, 
       required:true, 
-      unique:true
+      unique: true
 
    }, 
 
     email: {
     type: String,
-    unique: true,
+    unique: true, 
+    required: true, 
     match: [/.+\@.+\..+/, "Please enter a valid e-mail address"]
   },
 
@@ -34,12 +35,12 @@ const UserSchema = new Schema({
       ]
 
    }, 
-   lounges: [{
-    // Store ObjectIds in the array
-    type: Schema.Types.ObjectId,
-    // The ObjectIds will refer to the ids in the Lounge model
-    ref: 'Lounge'
-  }], 
+   //lounge that the user is joined to 
+   joinedTo:{
+      //type is set to the object id since lounges can have the same name 
+      type:Schema.Types.ObjectId,
+      ref: 'Lounge' 
+   }, 
 
    userCreated:{
       type: Date, 
@@ -50,8 +51,8 @@ const UserSchema = new Schema({
 });
 
 //Schema methods 
-UserSchema.methods.salt = pwd=>{
-   return Salt(pwd); 
+UserSchema.methods.salt = function(pwd){
+   return this.password = Salt(pwd); 
 }
 
 

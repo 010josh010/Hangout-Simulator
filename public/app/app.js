@@ -1,14 +1,14 @@
 // Include the Main React Dependencies
-const React = require("react");
-const ReactDOM = require("react-dom");
+import React from 'react'
+import ReactDOM from 'react-dom'
 
 
 //components 
-
+import Routes from './Routes'
 
 ReactDOM.render(
   <div> 
-     <p>Login Page!</p> 
+     <Routes /> 
   </div> 
   , document.getElementById('app')
 ); 
