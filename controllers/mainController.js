@@ -48,7 +48,7 @@ router.get('/verify',(req, res)=>{
 				if(err){
 					res.status(500).send(err); 
 				} else if(!user){
-					res.status(404).send('page not found'); 
+					res.status(401).send('Unauthorized'); 
 				} else {
 					res.status(200).json('verified'); 
 				}
@@ -101,11 +101,11 @@ router.post('/account/auth' , (req, res)=>{
 			if(err){
 				res.send(err); 
 			} else if(!user) {
-				res.status(401).send('username or password is incorrect')
+				res.status(401).send('Unauthorized')
 			} else if(!pwd){
-				res.status(401).send('password required'); 
+				res.status(401).send('Unauthorized'); 
 			} else if(pwd !== user.password){
-				res.status(401).send('username or password is incorrect')
+				res.status(401).send('Unauthorized')
 			} else {
 				//exchage for a web token here 
 				const jwtToken = jwt.sign({userId:user._id} , Shared.secret)

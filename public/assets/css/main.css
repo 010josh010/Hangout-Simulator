@@ -10,6 +10,7 @@
     src: url('../fonts/levibrush.ttf');
 }
 
+
 body{
 	font-family:futura;
 	background-color:#333;
@@ -20,8 +21,34 @@ h1{
 	text-shadow: 2px 2px #000; 
 }
 
+textarea{
+	outline:none;
+}
+
+textarea:focus{
+	  border-color: palevioletred;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+
+}
+
+button{
+	border:1px solid #000; 
+	border-radius: 5px;
+}
+
+
+.form-control:focus {
+  border-color: palevioletred;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
+
+.alert{
+	padding:5px;
+}
 .container{
 	text-align: center;
+	margin:0 auto;
 }
 
 .lounges div{
@@ -44,6 +71,7 @@ h1{
 
 .lounge {
 	background-color:#000;
+	cursor:pointer;
 }
 
 .login{
@@ -51,7 +79,7 @@ h1{
 }
 
 .lounges{
-	margin:0 5%;
+	margin:15px;
 }
 .lounge h4{
 	text-align: center;
@@ -78,12 +106,13 @@ h1{
 	font-size:1.2em;
 }
 
+
 .btn-submit{
-	padding:7px;
+	padding:15px;
 	outline:none;
 	margin:5px;
-	color:palevioletred;
 	background-color:#000;
+	color:palevioletred;
 	font-size:1.2em;
 	float:right;
 
@@ -101,13 +130,12 @@ h1{
 	color:crimson;
 }
 
+.btn:focus,.btn:active {
+   outline: none !important;
+}
 
 .controls{
 	clear:both;
-}
-
-.navigation{
-	padding:10px;
 }
 
 .controls button{
@@ -124,10 +152,32 @@ h1{
 	color:crimson;
 }
 
+.chat-body{
+	width:100%;
+	height:250px;
+	background-color:#eee;
+	padding:25px;
+	margin-top:25px;
+	margin-bottom:25px;
+	border: 5px solid #000;
+
+}
+
+.chat-input{
+	padding:25px;
+}
+
+
 @keyframes pulse{
 	0%{transform:scale(1,1) rotate(-20deg);}
 	50%{transform:scale(1.5,1.5) rotate(-20deg);}
 	100%{transform:scale(1,1) rotate(-20deg);}
+}
+
+@-webkit-keyframes pulse{
+	-webkit-0%{transform:scale(1,1) rotate(-20deg);}
+	-webkit-50%{transform:scale(1.5,1.5) rotate(-20deg);}
+	-webkit-100%{transform:scale(1,1) rotate(-20deg);}
 }
 
 .star{
@@ -139,12 +189,17 @@ h1{
 	animation-duration:2s;
 	animation-timing-function: ease-in-out;
 	animation-iteration-count: infinite;
+	-webkit-animation-name:pulse;
+	-webkit-animation-duration:2s;
+	-webkit-animation-timing-function: ease-in-out;
+	-webkit-animation-iteration-count: infinite;
 }
 
 .star img{
 	width:100%;
 	height:100%;
 }
+
 
 @media screen and (max-width: 600px){
 

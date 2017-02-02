@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios' 
+import { browserHistory} from 'react-router'
+
 
 //music for the lounge 
-const music = new Audio('../../assets/audio/yanSimBed.mp3'); 
+const loungeMusic = new Audio('../../assets/audio/yanSimBed.mp3'); 
 
 //children 
 import Star from './Star'
@@ -12,31 +14,49 @@ class Lounges extends Component{
 	constructor(props) {
 	    super(props);
 
+	   	this.startPlayingMusic = this.startPlayingMusic.bind(this); 
+
+		this.stopPlayingMusic = this.stopPlayingMusic.bind(this); 
+
 	    this.state = { 
-	      user: '', 
 
-	      lounges: [] , 
+	      user:'', 
 
-	      startPlayingMusic:function(){
-	      		music.loop = true; 
-	      		music.play();
-	      }, 
+	      music:loungeMusic, 
 
-	      stopPlayingMusic:function(){
-	      		music.pause(); 
-	      }, 
+	      lounges:[], 
 
-	      loggingOut:function(){
+	      playingMusic:false , 
+
+		  loggingOut:function(){
 	      	localStorage.removeItem('hsjwt'); 
-	      	window.location = '/'; 
-	      }
-	    };
+	      	//rediredct to the login page
+			browserHistory.push('/');
+			}
+	    
+	    }
+
   }
+
+  	startPlayingMusic(){
+  		this.state.music.play();
+  		this.state.playingMusic = true; 
+	}
+
+	stopPlayingMusic(){
+		this.state.music.pause(); 
+		this.state.playingMusic = false; 
+	}
+
+	loopMusic(){
+		this.state.music.loop = true;  
+	}
 
 
 	componentDidMount(){
+		this.startPlayingMusic();
+		this.loopMusic(); 
 
-		this.state.startPlayingMusic(); 
 		const headers = {
 			'Authorization': 'Bearer '+ localStorage.getItem('hsjwt')
 		}
@@ -53,59 +73,67 @@ class Lounges extends Component{
 				.catch(err=>{console.error(err)}); 
 	}
 
+
+	componentWillUnmount(){
+		this.stopPlayingMusic();
+	}
+
 	render(){
 		return(
 		<div className="container"> 
-			<Star /> 
-			<nav className="navigation">
-				<h1> Lounges </h1> 
-				<div className="userInfo">
-					<div className="dropdown">
-					  <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					    Logged in as {this.state.user}
-					    <span className="caret"></span>
-					  </button>
-					  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-					    <li>
-							<a><div className="btn-logout">
-								<div onClick ={this.state.loggingOut}>
+			<div className= "row"> 
+				<div className="col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
+					<Star /> 
+					<h1> Lounges </h1> 
+					<div className="userInfo">
+						<div className="dropdown">
+						  <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+						    Logged in as {this.state.user}
+						    <span className="caret"></span>
+						  </button>
+						  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+						    <li>
+								<a><div className="btn-logout">
+									<div onClick ={this.state.loggingOut}>
 
-									<i className="icon fa fa-gear fa-lg"></i> 
-									Log out 
-								</div> 
-							</div></a>
-					    </li>
-					    <li><a href="#">Manage Account</a></li>
-					  </ul>
+										<i className="icon fa fa-gear fa-lg"></i> 
+										Log out 
+									</div> 
+								</div></a>
+						    </li>
+						    <li><a href="#">Manage Account</a></li>
+						  </ul>
+						</div>
 					</div>
-				</div>
 
-				
-
-				<div className= "controls">
-					<button className="btn btn-controls" onClick ={this.state.stopPlayingMusic}>
-					<i className="icon fa fa-pause fa-lg"> </i>
-						 stop playing
-					</button> 
-					<button className="btn btn-controls" onClick = {this.state.startPlayingMusic}>
-						<i className="icon fa fa-play fa-lg"></i>
-							start playing 
-					</button> 
+					<div className= "controls">
+						<button className="btn btn-controls" onClick ={this.stopPlayingMusic}>
+						<i className="icon fa fa-pause fa-lg"> </i>
+							 stop playing
+						</button> 
+						<button className="btn btn-controls" onClick = {this.startPlayingMusic}>
+							<i className="icon fa fa-play fa-lg"></i>
+								start playing 
+						</button> 
+					</div> 
 				</div> 
-			</nav>	
+			</div> 
 
-			<ul className="lounges">
-				<div>
-					{this.state.lounges.map(lounge=>{
-						return (
-							<div key={lounge._id}>
-								<li className="well lounge"> <h4>{lounge.name }</h4></li> 
-							</div> 
-						)
-					})}
-				</div>
-			</ul>
-
+			<div className="row"> 
+				<div className = "col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12"> 
+					<ul className="lounges">
+						<div>
+							{this.state.lounges.map(lounge=>{
+								return (
+									<div key={lounge._id}>
+										<li className="well lounge"> <h4>{lounge.name }</h4></li> 
+									</div> 
+								)
+							})}
+						</div>
+					</ul>
+				</div> 
+			</div> 
 		</div> 
 			
 		)
