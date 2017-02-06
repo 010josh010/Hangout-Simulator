@@ -83,6 +83,9 @@ app.use('/api' , mainController);
   res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
 })
 
+//for serving static content 
+app.use(express.static(path.join(__dirname, 'public')));
+
  //for jwt 
  app.use(expressJWT({secret: Shared.secret}).unless({path: ['/api/account/auth', '/api/account/signup']}))
 

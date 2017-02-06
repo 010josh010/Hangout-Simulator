@@ -266,7 +266,5 @@ router.delete('/lounge/remove' , (req, res)=>{
 */
 
 
-
-
 //exports the module as router
 module.exports = router ; 
