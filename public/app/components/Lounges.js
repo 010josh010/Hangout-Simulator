@@ -79,7 +79,6 @@ class Lounges extends Component{
 	}
 
 	componentDidMount(){
-		this.startPlayingMusic();
 		this.loopMusic();
 
 	}
