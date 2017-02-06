@@ -84,7 +84,7 @@ router.post('/account/signup' , (req, res)=>{
 		if(err){
 			res.status(500).send(err); 
 		} else {
-			res.status(200).redirect('/'); 
+			res.status(200).send(saved); 
 		}
 	})
 })
@@ -156,6 +156,7 @@ router.put('/account/manage/',(req, res)=>{
 
 
 //route to add a new Lounge
+/*
 router.post('/lounge/add' , (req, res)=>{ 
 
 	//for verification 
@@ -189,6 +190,10 @@ router.post('/lounge/add' , (req, res)=>{
 
 });
 
+*/
+
+
+/*
 //route to join a lounge 
 router.get('/lounge/join/?:loungeId', (req, res)=>{
 	
@@ -255,6 +260,8 @@ router.delete('/lounge/remove' , (req, res)=>{
 
 
 });
+
+*/
 
 
 

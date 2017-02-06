@@ -6,16 +6,17 @@ import { browserHistory } from 'react-router'
 import Banner from './children/Banner'
 import Star from './children/Star'
 
-class Login extends Component{
+class Signup extends Component{
 
 	constructor(props) {
 	    super(props);
 	    //binding this component to the handle methods 
 	    this.handleSubmit = this.handleSubmit.bind(this); 
 	    this.handleError = this.handleError.bind(this); 
+	    this.handleSuccess = this.handleSuccess.bind(this);
 
 	    this.state = { 
-	    	error: ''		
+	    	error: ''
 	    }
     }
 
@@ -24,19 +25,24 @@ class Login extends Component{
     	this.errorBox.className += 'alert alert-danger'; 
     }
 
+    handleSuccess(){
+    	browserHistory.push('/thankyou')
+    }
+
     handleSubmit(event){
     	event.preventDefault(); 
 		const username = event.target.elements[0].value
-    	const password = event.target.elements[1].value
+		const email = event.target.elements[1].value
+    	const password = event.target.elements[2].value
 
    		if(username && password.length >=8){
-		      	axios.post('/api/account/auth' , {
+		      	axios.post('/api/account/signup' , {
 		      		userName:username, 
+		      		email:email,
 		      		password:password 
 		      	}).then(res=>{
 	      			if(res.status === 200){
-						localStorage.setItem('hsjwt', res.data.token);
-						browserHistory.push('/lounges');
+						this.handleSuccess(); 
 					} 
 
 		      	}).catch(err=>{
@@ -81,19 +87,25 @@ class Login extends Component{
 					<div className="col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"> 
 						<Star />
 						<Banner />
-						<h1> Login </h1>
+						<h1> Signup </h1>
 						<div ref={(ref)=>{this.errorBox = ref}}>{this.state.error}</div>
 					</div>
 				</div> 
 				
 				<div className ="row"> 
 					<div className="col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
-						<form onSubmit={this.handleSubmit} className="login">
+						<form onSubmit={this.handleSubmit} className="Signup">
 				          <div className="form-group">
 				          	<br/>					           
 				              <input id="username" type="text" className="form-control"  aria-describedby="Username" placeholder="Enter username" required>
 				              </input> 
 				          </div>
+
+				          <div className="form-group">
+			              	<br/>
+			                  <input id="email" type="email" className="form-control" placeholder="Email Address" required>
+			                  </input> 
+			              </div>  
 		       
 			              <div className="form-group">
 			              	<br/>
@@ -102,7 +114,7 @@ class Login extends Component{
 			              </div>  
 			           
 			                <button type="submit" className="btn-submit">Submit</button>
-			                <a className="pale-violet-red" href="/signup">Don't have an account? Click here to sign up!</a>
+			                <a className="pale-violet-red" href="/">Already have an account? Click here to Log in!</a>
 					    </form>
 					</div> 
 				</div> 	
@@ -112,4 +124,4 @@ class Login extends Component{
 	}
 }
 
-export default Login 
+export default Signup 

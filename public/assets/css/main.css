@@ -58,7 +58,9 @@ blockquote p {
  
 }
 
-
+.pale-violet-red{
+	color:palevioletred;
+}
 
 .form-control:focus {
   border-color: palevioletred;
