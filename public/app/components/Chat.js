@@ -13,12 +13,13 @@ class Chat extends Component {
 		super(props); 
 
 		this.handleSubmit = this.handleSubmit.bind(this);
-		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.handleKeyUp = this.handleKeyUp.bind(this);
 		this.handleNewMessage = this.handleNewMessage.bind(this);
+		this.handleIsTyping = this.handleIsTyping.bind(this);
 	
 
 		this.state ={
-			name:'LoungeName', 
+			name:'Test', 
 
 			socket: ()=>{}, 
 
@@ -26,7 +27,11 @@ class Chat extends Component {
 
 			joined: [], 
 
-			messages: [{_id:1 , user:'???'  , msg:'test' , time: moment.utc().format('MMMM Do YYYY, h:mm:ss a')}],
+			isTyping: false, 
+
+			isTypingMsg: '', 
+
+			messages: [{_id:1 , user:'LoungeBot'  , msg: 'Welcome to Test', time: moment.utc().format('MMMM Do YYYY, h:mm:ss a')}],
 
 			utcOffset: moment().utcOffset()
 
@@ -50,15 +55,69 @@ class Chat extends Component {
 			//clear out the textarea 
 			this.chatInput.value = '';  
 
+			//emit not typing because the data was sent 
+			this.setState({isTyping:false} , _=>{
+				this.state.socket.emit('not typing' , {user:data.user})
+
+			})
+
 			//save message to the db
-			this.saveMessageToDB(data); 
+			//this.saveMessageToDB(data);
 		} 
 	}
 
-	handleKeyPress(event){
+	handleKeyUp(event){
+		//if the key is enter then submit the form
 		if(event.key === 'Enter'){
 			this.handleSubmit(event); 
+		}
 
+		//for passing to the typing event 
+		let data = {
+			user:this.state.user
+		}
+
+		//for handling typing triggers 
+		if(this.chatInput.value && this.state.isTyping === false){
+
+			this.setState({isTyping:true} , _=>{
+				this.state.socket.emit('typing' ,data)
+				
+			})
+		//if the chat input is empty then emit not typing 
+		} else if(!this.chatInput.value){
+
+			//set the state of typing back to false
+			this.setState({isTyping:false},  _=>{
+				this.state.socket.emit('not typing' , data)
+			})
+			
+		}
+	}
+
+	handleIsTyping(data){
+		let user = data.user; 
+
+		//set the is typing message to this 
+		if(this.state.user !== user){
+				this.setState({isTypingMsg: `${user} is typing a message`}, _=>{
+					//set the class to fadeTo to trigger the animation
+					this.isTypingP.className = 'fadeTo'
+				}); 
+		}
+	}
+
+	handleIsNotTyping(data){
+		let user = data.user;
+
+
+		if(this.state.user !== user){
+			//set the state of the isTypingmsg to a blank string 
+			this.setState({isTypingMsg:''} , _=>{
+
+				//remove all the classes from the element
+				this.isTypingP.className = ''
+			}); 
 		}
 	}
 
@@ -69,6 +128,7 @@ class Chat extends Component {
 						utcOffset(this.state.utcOffset).
 							format('MMMM Do YYYY, h:mm:ss a');
 
+		//adding the new message and concatenating to the array					
 		this.setState({
 			messages:this.state.messages.concat([data])
 		});
@@ -113,6 +173,14 @@ class Chat extends Component {
 				this.handleNewMessage(data); 
 			})
 
+			//isTyping event
+			this.state.socket.on('is typing' , data=>{
+				this.handleIsTyping(data); 
+			})
+
+			this.state.socket.on('is not typing' , data=>{
+				this.handleIsNotTyping(data); 
+			})
 
 
 		});
@@ -142,7 +210,7 @@ class Chat extends Component {
 						<div ref={(ref)=>this.chatBody = ref} className = "chat-body"> 
 							{this.state.messages.map(data=>{ 
 								return(
-									<div key={data._id} className="message-container">
+									<div key={data._id} className="message-container fadeTo">
 										<strong>{data.user}</strong><time>{data.time}</time> 
 										<br /> 
 										<blockquote>
@@ -151,7 +219,9 @@ class Chat extends Component {
 									</div> 
 								)
 							})}
+							
 						</div>
+						<div className="isTyping"> <p ref={(ref)=>{this.isTypingP = ref}}> {this.state.isTypingMsg} </p> </div> 
 					</div> 
 				</div> 
 
@@ -159,7 +229,7 @@ class Chat extends Component {
 					<div className="col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12"> 
 						<form ref={(ref)=> this.chatForm = ref} onSubmit={this.handleSubmit}> 
 							<div className="chat-input"> 
-								<textarea onKeyPress={this.handleKeyPress} ref={(ref)=> this.chatInput = ref} rows="2" cols="50"/> 
+								<textarea onKeyUp={this.handleKeyUp} ref={(ref)=> this.chatInput = ref} rows="2" cols="50"/> 
 								<button type="submit" className="btn-submit">Send</button>
 							</div> 
 						</form> 

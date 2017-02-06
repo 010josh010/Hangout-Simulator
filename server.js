@@ -37,6 +37,16 @@ io.sockets.on('connection' , socket=>{
 	socket.on('send message' , data=>{
 		io.sockets.emit('new message' , data); 
 	})
+
+	//typing event trigger
+	socket.on('typing' , data=>{
+		io.sockets.emit('is typing' , data);
+	})
+
+	//notTyping event 
+	socket.on('not typing' , data=>{
+		io.sockets.emit('is not typing' , data); 
+	})
 })
 
 

@@ -52,6 +52,10 @@ class Lounges extends Component{
 		this.state.music.loop = true;  
 	}
 
+	joinLounge(){
+		browserHistory.push('/chat=test');
+	}
+
 
 	componentWillMount(){ 
 
@@ -77,6 +81,7 @@ class Lounges extends Component{
 	componentDidMount(){
 		this.startPlayingMusic();
 		this.loopMusic();
+
 	}
 
 
@@ -111,7 +116,6 @@ class Lounges extends Component{
 						  </ul>
 						</div>
 					</div>
-
 					<div className= "controls">
 						<button className="btn btn-controls" onClick ={this.stopPlayingMusic}>
 						<i className="icon fa fa-pause fa-lg"> </i>
@@ -123,7 +127,10 @@ class Lounges extends Component{
 						</button> 
 					</div> 
 				</div> 
+
+				<div className="admin-message"> <h4>Welcome to Hangout Simulator Alpha! As of now , the only lounge available is test. Thank you.  </h4> </div> 
 			</div> 
+
 
 			<div className="row"> 
 				<div className = "col-lg-6 col-lg-offset-3 col-md-7 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12"> 
@@ -131,7 +138,7 @@ class Lounges extends Component{
 						<div>
 							{this.state.lounges.map(lounge=>{
 								return (
-									<div key={lounge._id}>
+									<div onClick={this.joinLounge} key={lounge._id}>
 										<li className="well lounge"> <h4>{lounge.name }</h4></li> 
 									</div> 
 								)

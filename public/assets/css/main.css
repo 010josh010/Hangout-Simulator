@@ -69,6 +69,18 @@ blockquote p {
 .alert{
 	padding:5px;
 }
+
+.admin-message{
+	clear:both;
+	margin:15px;
+	padding:15px;
+	color:palevioletred;
+	text-shadow: 1px 1px #000;
+	-webkit-text-shadow:1px 1px #000;
+	-moz-text-shadow:1px 1px #000;
+	-ms-text-shadow:1px 1px #000;
+}
+
 .container{
 	text-align: center;
 	margin:0 auto;
@@ -121,8 +133,6 @@ blockquote p {
 	margin:5px;
 }
 
-
-
 .form-group input{
 	font-size:1.2em;
 }
@@ -140,7 +150,6 @@ blockquote p {
 	height:60px;
 
 }
-
 
 .btn-submit:hover{
 	background-color:none;
@@ -183,12 +192,12 @@ blockquote p {
 
 .chat-body{
 	width:100%;
-	height:425px;
+	height:450px;
 	background-color:#eee;
 	padding:25px;
 	margin-top:25px;
-	margin-bottom:10px;
-	border: 5px solid #000;
+	border: 3px solid #000;
+	border-bottom:none;
 	text-align: left;
 	overflow: scroll;
 
@@ -199,22 +208,64 @@ blockquote p {
 	
 }
 
+
 @keyframes fadeTo{
 	from {opacity: 0}
 	to {opacity:1 }
 }
 
-.message-container{
-	border-bottom:1px solid #ccc;
-	padding:15px;
-	animation-name:fadeTo;
-	animation-duration:.4s;
-	animation-timing-function: ease-in;
+@-webkit-keyframes fadeTo{
+	from {-webkit-opacity: 0}
+	to {-webkit-opacity:1 }
 
 }
 
-.message{
+@-moz-keyframes fadeTo{
+	from {-moz-opacity: 0}
+	to {-moz-opacity:1 }
+
+}
+
+.fadeTo{
+	animation-name:fadeTo;
+	animation-duration:.4s;
+	animation-timing-function: ease-in;
+	-webkit-animation-name:fadeTo;
+	-webkit-animation-duration:.4s;
+	-webkit-animation-timing-function: ease-in;
+	-moz-animation-name:fadeTo;
+	-moz-animation-duration:.4s;
+	-moz-animation-timing-function: ease-in;
+	-ms-animation-name:fadeTo;
+	-ms-animation-duration:.4s;
+	-ms-animation-timing-function: ease-in;
+}
+
+
+.message-container{
+	border-bottom:1px solid #ccc;
+	padding:10px;
+
+}
+
+
+.isTyping{
+	float:left;
+	margin:0;
+	height:25px;
+	width:100%;
+	max-height: 25px;
+	font-style:italic;
+	color:#777;
+	text-align: left;
+	background-color:#eee;
+	border:3px solid #000;
+	border-top:none;
 	
+}
+
+.isTyping p{
+	margin-left:10px;
 }
 
 .row{
@@ -232,6 +283,12 @@ blockquote p {
 	-webkit-0%{transform:scale(1,1) rotate(-20deg);}
 	-webkit-50%{transform:scale(1.5,1.5) rotate(-20deg);}
 	-webkit-100%{transform:scale(1,1) rotate(-20deg);}
+}
+
+@-moz-keyframes pulse{
+	-moz-0%{transform:scale(1,1) rotate(-20deg);}
+	-moz-50%{transform:scale(1.5,1.5) rotate(-20deg);}
+	-moz-100%{transform:scale(1,1) rotate(-20deg);}
 }
 
 .star{
@@ -266,6 +323,10 @@ blockquote p {
 		margin:none;
 	}
 
+	.isTyping{
+		border:none;
+	}
+
 	.star{
 		width:25px;
 		height:25px;
@@ -279,4 +340,5 @@ blockquote p {
 		padding:none;
 		margin:none;
 	}
+
 }
