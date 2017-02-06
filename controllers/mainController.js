@@ -17,9 +17,9 @@ const Lounge = require('../models/Lounge');
 
 /*Database configuration with mongoose begin----------*/
 const localConn = 'mongodb://localhost/hangoutSim_db'; 
-const mongoURI = `mongodb://heroku_hdxdk3f2:i81ine4tolat4q4t7094fvb8nc@ds053130.mlab.com:53130/heroku_hdxdk3f2
-`
-mongoose.connect(mongoURI);
+const MONGODB_URI = 'mongodb://heroku_hdxdk3f2:i81ine4tolat4q4t7094fvb8nc@ds053130.mlab.com:53130/heroku_hdxdk3f2';
+
+mongoose.connect(MONGODB_URI);
 const db = mongoose.connection;
 
 //configuring mongoose to use native promises due to mpromise deprecation
