@@ -3,8 +3,8 @@ import axios from 'axios';
 import { browserHistory } from 'react-router'
 
 //children 
-import Banner from './Banner'
-import Star from './Star'
+import Banner from './children/Banner'
+import Star from './children/Star'
 
 class Login extends Component{
 

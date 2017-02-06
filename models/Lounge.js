@@ -9,15 +9,20 @@ const LoungeSchema = new Schema({
    name:{
       type:String, 
       trim: true, 
-      required:true
+      required:true, 
+      validate:[
+          function(name){
+            return name.length > 12 ; 
+          } , 
+
+          'Lounge name can\'t be more than 12 characters' 
+      ]
    }, 
 
-
-   members: [{
-    type: Schema.Types.ObjectId,
-    // The ObjectIds will refer to the ids in the User model
-    ref: 'User'
-  }], 
+   messages:[{
+      type: Schema.Types.ObjectId, 
+      ref: 'Message'
+   }],  
 
    loungeCreated:{
       type: Date, 
@@ -27,9 +32,7 @@ const LoungeSchema = new Schema({
 });
 
 //methods 
-LoungeSchema.methods.addMember = function(userId){
-   this.members.push(userId); 
-}
+
 
 // Create the "Lounge" model with our LoungeSchema 
 const Lounge= mongoose.model('Lounge', LoungeSchema);

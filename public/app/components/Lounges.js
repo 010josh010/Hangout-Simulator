@@ -7,7 +7,7 @@ import { browserHistory} from 'react-router'
 const loungeMusic = new Audio('../../assets/audio/yanSimBed.mp3'); 
 
 //children 
-import Star from './Star'
+import Star from './children/Star'
 
 class Lounges extends Component{
 
@@ -53,9 +53,7 @@ class Lounges extends Component{
 	}
 
 
-	componentDidMount(){
-		this.startPlayingMusic();
-		this.loopMusic(); 
+	componentWillMount(){ 
 
 		const headers = {
 			'Authorization': 'Bearer '+ localStorage.getItem('hsjwt')
@@ -70,7 +68,15 @@ class Lounges extends Component{
 					this.setState({user:username})
 				})
 
-				.catch(err=>{console.error(err)}); 
+				.catch(err=>{
+					console.error(err)
+					browserHistory.push('/'); 
+				}); 
+	}
+
+	componentDidMount(){
+		this.startPlayingMusic();
+		this.loopMusic();
 	}
 
 

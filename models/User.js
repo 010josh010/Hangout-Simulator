@@ -36,11 +36,11 @@ const UserSchema = new Schema({
 
    }, 
    //lounge that the user is joined to 
-   joinedTo:{
+   friends:[{
       //type is set to the object id since lounges can have the same name 
       type:Schema.Types.ObjectId,
-      ref: 'Lounge' 
-   }, 
+      ref: 'User' 
+   }], 
 
    userCreated:{
       type: Date, 
@@ -54,7 +54,6 @@ const UserSchema = new Schema({
 UserSchema.methods.salt = function(pwd){
    return this.password = Salt(pwd); 
 }
-
 
 // Create the "User" model with our UserSchema schema
 const User = mongoose.model('User', UserSchema);

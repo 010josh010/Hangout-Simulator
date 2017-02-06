@@ -116,6 +116,24 @@ router.post('/account/auth' , (req, res)=>{
 })
 
 //route to manage a users account and update information 
+router.get('/account/info/',(req, res)=>{
+	//for verification 
+	const userId = req.user.userId;  
+
+	User.findOne({_id: userId})
+			.exec((err, user)=>{
+				if(err){
+					res.status(500).send(err); 
+				} else if(!user){
+					res.status(404).send('page not found'); 
+				} else {
+					res.status(200).json(user); 
+				}
+			}); 
+
+}); 
+
+//route to manage a users account and update information 
 router.put('/account/manage/',(req, res)=>{
 
 	//for verification 
@@ -135,23 +153,7 @@ router.put('/account/manage/',(req, res)=>{
 
 }); 
 
-//route to manage a users account and update information 
-router.get('/account/info/',(req, res)=>{
-	//for verification 
-	const userId = req.user.userId;  
 
-	User.findOne({_id: userId})
-			.exec((err, user)=>{
-				if(err){
-					res.status(500).send(err); 
-				} else if(!user){
-					res.status(404).send('page not found'); 
-				} else {
-					res.status(200).json(user); 
-				}
-			}); 
-
-}); 
 
 //route to add a new Lounge
 router.post('/lounge/add' , (req, res)=>{ 
