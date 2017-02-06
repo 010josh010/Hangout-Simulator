@@ -12,7 +12,7 @@ const LoungeSchema = new Schema({
       required:true, 
       validate:[
           function(name){
-            return name.length > 12 ; 
+            return name.length < 12 ; 
           } , 
 
           'Lounge name can\'t be more than 12 characters' 
